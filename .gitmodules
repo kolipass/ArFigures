@@ -1,0 +1,3 @@
+[submodule "MetaioSdk"]
+	path = MetaioSdk
+	url = https://github.com/kolipass/MetaioSdk
