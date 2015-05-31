@@ -206,11 +206,11 @@ public class TestActivity extends ARViewActivity {
             AssetsManager.extractAllAssets(getApplicationContext(), BuildConfig.DEBUG);
             // Load tiger model
             final File tigerModelPath =
-                    AssetsManager.getAssetPathAsFile(getApplicationContext(), "cube.txt.obj");
+                    AssetsManager.getAssetPathAsFile(getApplicationContext(), "Lorenc.txt.obj");
             cube = metaioSDK.createGeometry(tigerModelPath);
 
             // Set geometry properties and initially hide it
-            cube.setScale(64f);
+            cube.setScale(5f);
             cube.setRotation(new Rotation(0f, 0f, (float) Math.PI));
             cube.setVisible(false);
             cube.setAnimationSpeed(60f);

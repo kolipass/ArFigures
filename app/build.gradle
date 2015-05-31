@@ -26,17 +26,3 @@ dependencies {
     compile project(':MetaioSdk:metaioSDK')
 }
 
-task copyMetaioLib(type: Copy) {
-    println(":copyMetaioLib")
-
-    def dir = new File(project.getBuildDir(), "../libs/")
-    if (!dir.isDirectory()) {
-        println("mkdir " + dir.getAbsolutePath() + " " + dir.mkdirs());
-    }
-    if (!(new File(dir,"metaiosdk.jar").exists())) {
-        from rootDir.absolutePath +"/MetaioSdk/metaioSDK/libs"
-        into 'libs'
-
-
-    }
-}

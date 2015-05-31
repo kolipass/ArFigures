@@ -12,8 +12,7 @@
         <activity
             android:name=".TestActivity"
             android:configChanges="fontScale|keyboard|keyboardHidden|locale|mnc|mcc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|uiMode|touchscreen"
-
-            android:label="Cube">
+>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
