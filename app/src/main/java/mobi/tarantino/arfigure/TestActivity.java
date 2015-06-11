@@ -14,11 +14,11 @@ import com.metaio.sdk.jni.TrackingValues;
 import com.metaio.tools.io.AssetsManager;
 
 import java.io.File;
-import java.io.IOException;
 
 //TutorialInstantTracking clone
 public class TestActivity extends ARViewActivity {
 
+    public static final String FILE_NAME = "file_name";
     /**
      * Tiger geometry
      */
@@ -52,11 +52,14 @@ public class TestActivity extends ARViewActivity {
      * Whether to set tracking configuration on onInstantTrackingEvent
      */
     boolean mMustUseInstantTrackingEvent = false;
+    private String fileName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        fileName = getIntent().getStringExtra(FILE_NAME);
+        fileName = fileName != null ? fileName : "Lorenc.txt.obj";
 
         cube = null;
         mCallbackHandler = new MetaioSDKCallbackHandler();
@@ -206,7 +209,7 @@ public class TestActivity extends ARViewActivity {
             AssetsManager.extractAllAssets(getApplicationContext(), BuildConfig.DEBUG);
             // Load tiger model
             final File tigerModelPath =
-                    AssetsManager.getAssetPathAsFile(getApplicationContext(), "Lorenc.txt.obj");
+                    AssetsManager.getAssetPathAsFile(getApplicationContext(), fileName);
             cube = metaioSDK.createGeometry(tigerModelPath);
 
             // Set geometry properties and initially hide it
