@@ -2,7 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:visibility="gone" >
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:visibility="visible"
+    android:visibility="gone">
 
     <ImageButton
         android:id="@+id/button1"
@@ -15,13 +17,13 @@
 
     <LinearLayout
         android:id="@+id/buttonBar"
-        android:background="@null"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="10dp"
-        android:orientation="vertical" >
+        android:background="@null"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/instant2DButton"
@@ -58,5 +60,12 @@
             android:onClick="on2DSLAMExtrapolationButtonClicked"
             android:text="2D SLAM + sensor extrapolation" />
     </LinearLayout>
+
+    <include
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        layout="@layout/scale_buttons"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" />
 
 </RelativeLayout>

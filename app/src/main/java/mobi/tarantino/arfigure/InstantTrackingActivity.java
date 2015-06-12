@@ -5,29 +5,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.metaio.sdk.ARViewActivity;
 import com.metaio.sdk.MetaioDebug;
 import com.metaio.sdk.jni.IGeometry;
-import com.metaio.sdk.jni.IMetaioSDKCallback;
 import com.metaio.sdk.jni.Rotation;
 import com.metaio.sdk.jni.TrackingValues;
 import com.metaio.tools.io.AssetsManager;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 //TutorialInstantTracking clone
-public class TestActivity extends ARViewActivity {
+public class InstantTrackingActivity extends MechActivity {
 
     public static final String FILE_NAME = "file_name";
-    /**
-     * Tiger geometry
-     */
-    private IGeometry cube;
-
-    /**
-     * metaio SDK callback handler
-     */
-    private MetaioSDKCallbackHandler mCallbackHandler;
 
     /**
      * Flag to indicate proximity to the tiger
@@ -40,7 +32,7 @@ public class TestActivity extends ARViewActivity {
     private View m3DButton;
     private View m2DSLAMButton;
     private View m2DSLAMExtrapolationButton;
-
+    protected List<View> buttons = new ArrayList<>();
     /**
      * The flag indicating a mode of instant tracking
      *
@@ -61,8 +53,8 @@ public class TestActivity extends ARViewActivity {
         fileName = getIntent().getStringExtra(FILE_NAME);
         fileName = fileName != null ? fileName : "Lorenc.txt.obj";
 
-        cube = null;
-        mCallbackHandler = new MetaioSDKCallbackHandler();
+        model = null;
+        mCallbackHandler = new MetaioSDKCallbackHandler2();
         mIsCloseToTiger = false;
 
 
@@ -72,15 +64,15 @@ public class TestActivity extends ARViewActivity {
         m2DSLAMButton = mGUIView.findViewById(R.id.instant2DSLAMButton);
         m2DSLAMExtrapolationButton = mGUIView.findViewById(R.id.instant2DSLAMExtrapolationButton);
 
+        Collections.addAll(buttons,
+                m2DButton,
+                m2DRectifiedButton,
+                m3DButton,
+                m2DSLAMButton,
+                m2DSLAMExtrapolationButton);
+
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mCallbackHandler.delete();
-        mCallbackHandler = null;
-
-    }
 
     /**
      * This method is regularly called in the rendering loop. It calculates the distance between
@@ -106,7 +98,7 @@ public class TestActivity extends ARViewActivity {
                     MetaioDebug.log("Moved close to the tiger");
                     mIsCloseToTiger = true;
                     playSound();
-                    cube.startAnimation("tap");
+                    model.startAnimation("tap");
                 }
             } else {
                 if (mIsCloseToTiger) {
@@ -136,10 +128,6 @@ public class TestActivity extends ARViewActivity {
         return R.layout.tutorial_instant_tracking;
     }
 
-    @Override
-    protected IMetaioSDKCallback getMetaioSDKCallbackHandler() {
-        return mCallbackHandler;
-    }
 
     @Override
     public void onDrawFrame() {
@@ -153,54 +141,41 @@ public class TestActivity extends ARViewActivity {
         finish();
     }
 
-    public void on2DButtonClicked(View v) {
+    private void startTracking(String type, View nonChangeble) {
         mMustUseInstantTrackingEvent = true;
-        cube.setVisible(false);
-        m2DRectifiedButton.setEnabled(!mPreview);
-        m3DButton.setEnabled(!mPreview);
-        m2DSLAMButton.setEnabled(!mPreview);
-        m2DSLAMExtrapolationButton.setEnabled(!mPreview);
-        metaioSDK.startInstantTracking("INSTANT_2D", new File(""), mPreview);
+        model.setVisible(false);
+
+        for (View view : buttons) {
+            if (!view.equals(nonChangeble)) {
+                view.setEnabled(!mPreview);
+            }
+        }
+        if (type != null) {
+            metaioSDK.startInstantTracking(type, new File(""), mPreview);
+        }
         mPreview = !mPreview;
     }
 
+    public void on2DButtonClicked(View v) {
+        startTracking("INSTANT_2D", m2DButton);
+    }
+
     public void on2DRectifiedButtonClicked(View v) {
-        mMustUseInstantTrackingEvent = true;
-        cube.setVisible(false);
-        m2DButton.setEnabled(!mPreview);
-        m3DButton.setEnabled(!mPreview);
-        m2DSLAMButton.setEnabled(!mPreview);
-        m2DSLAMExtrapolationButton.setEnabled(!mPreview);
-        metaioSDK.startInstantTracking("INSTANT_2D_GRAVITY", new File(""), mPreview);
-        mPreview = !mPreview;
+        startTracking("INSTANT_2D_GRAVITY", m2DRectifiedButton);
     }
 
     public void on3DButtonClicked(View v) {
         mMustUseInstantTrackingEvent = false;
-        cube.setVisible(false);
+        model.setVisible(false);
         metaioSDK.startInstantTracking("INSTANT_3D");
     }
 
     public void on2DSLAMButtonClicked(View v) {
-        mMustUseInstantTrackingEvent = true;
-        cube.setVisible(false);
-        m2DButton.setEnabled(!mPreview);
-        m2DRectifiedButton.setEnabled(!mPreview);
-        m3DButton.setEnabled(!mPreview);
-        m2DSLAMExtrapolationButton.setEnabled(!mPreview);
-        metaioSDK.startInstantTracking("INSTANT_2D_GRAVITY_SLAM", new File(""), mPreview);
-        mPreview = !mPreview;
+        startTracking("INSTANT_2D_GRAVITY_SLAM", m2DSLAMButton);
     }
 
     public void on2DSLAMExtrapolationButtonClicked(View v) {
-        mMustUseInstantTrackingEvent = true;
-        cube.setVisible(false);
-        m2DButton.setEnabled(!mPreview);
-        m2DRectifiedButton.setEnabled(!mPreview);
-        m3DButton.setEnabled(!mPreview);
-        m2DSLAMButton.setEnabled(!mPreview);
-        metaioSDK.startInstantTracking("INSTANT_2D_GRAVITY_SLAM_EXTRAPOLATED", new File(""), mPreview);
-        mPreview = !mPreview;
+        startTracking("INSTANT_2D_GRAVITY_SLAM_EXTRAPOLATED", m2DSLAMExtrapolationButton);
     }
 
     @Override
@@ -208,17 +183,17 @@ public class TestActivity extends ARViewActivity {
         try {
             AssetsManager.extractAllAssets(getApplicationContext(), BuildConfig.DEBUG);
             // Load tiger model
-            final File tigerModelPath =
+            final File modelPath =
                     AssetsManager.getAssetPathAsFile(getApplicationContext(), fileName);
-            cube = metaioSDK.createGeometry(tigerModelPath);
+            model = metaioSDK.createGeometry(modelPath);
 
             // Set geometry properties and initially hide it
-            cube.setScale(5f);
-            cube.setRotation(new Rotation(0f, 0f, (float) Math.PI));
-            cube.setVisible(false);
-            cube.setAnimationSpeed(60f);
-            cube.startAnimation("meow");
-            MetaioDebug.log("Loaded geometry " + tigerModelPath);
+            updateScale();
+            model.setRotation(new Rotation(0f, 0f, (float) Math.PI));
+            model.setVisible(false);
+            MetaioDebug.log("Loaded geometry " + modelPath);
+
+
         } catch (Exception e) {
             MetaioDebug.log(Log.ERROR, "Error loading geometry: " + e.getMessage());
         }
@@ -231,18 +206,7 @@ public class TestActivity extends ARViewActivity {
         geometry.startAnimation("tap");
     }
 
-    final class MetaioSDKCallbackHandler extends IMetaioSDKCallback {
-
-        @Override
-        public void onSDKReady() {
-            // show GUI
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mGUIView.setVisibility(View.VISIBLE);
-                }
-            });
-        }
+    protected class MetaioSDKCallbackHandler2 extends MetaioSDKCallbackHandler {
 
 
         @Override
@@ -255,7 +219,7 @@ public class TestActivity extends ARViewActivity {
                     metaioSDK.setTrackingConfiguration(filePath);
                 }
 
-                cube.setVisible(true);
+                model.setVisible(true);
             } else {
                 MetaioDebug.log(Log.ERROR, "Failed to create instant tracking configuration!");
             }

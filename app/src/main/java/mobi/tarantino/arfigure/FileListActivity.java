@@ -1,8 +1,9 @@
 package mobi.tarantino.arfigure;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -62,9 +63,30 @@ public class FileListActivity extends AppCompatActivity implements AdapterView.O
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent postIntent = new Intent(this, TestActivity.class);
-        postIntent.putExtra(TestActivity.FILE_NAME, (String) parent.getAdapter().getItem(position));
-        startActivity(postIntent);
+    public void onItemClick(final AdapterView<?> parent, View view, final int position, long id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(FileListActivity.this);
+        builder.setTitle(R.string.select_ar_type)
+                .setMessage(R.string.select_ar_type_message)
+                .setCancelable(true)
+                .setNegativeButton(R.string.marker,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent postIntent = new Intent(FileListActivity.this, MechActivity.class);
+                                postIntent.putExtra(InstantTrackingActivity.FILE_NAME, (String) parent.getAdapter().getItem(position));
+                                startActivity(postIntent);
+                            }
+                        })
+                .setPositiveButton(R.string.custom_surface,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent postIntent = new Intent(FileListActivity.this, InstantTrackingActivity.class);
+                                postIntent.putExtra(InstantTrackingActivity.FILE_NAME, (String) parent.getAdapter().getItem(position));
+                                startActivity(postIntent);
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+
     }
 }
