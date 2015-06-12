@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">AR Figure</string>
+    <string name="no_mesh">There is not mesh on devece :-(</string>
+    <string name="mesh_list">Mesh list</string>
     <!--<string name="metaioSDKSignature">jfyNFXmImfsYs1RJrXlhyUXNJ+9Gci0JuAbQ4yMu5OM=</string>-->
 </resources>
