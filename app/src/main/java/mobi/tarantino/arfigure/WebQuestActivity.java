@@ -97,7 +97,7 @@ public class WebQuestActivity extends Activity {
         LinkedList<CameraView> cameraViews = new LinkedList<CameraView>() {{
             add((CameraView) findViewById(R.id.preview_surface));
             add((CameraView) findViewById(R.id.preview_surface2));
-            add((CameraView) findViewById(R.id.preview_surface3));
+//            add((CameraView) findViewById(R.id.preview_surface3));
         }};
 
         cameraController.setCameraViews(cameraViews);
@@ -130,28 +130,34 @@ public class WebQuestActivity extends Activity {
 //
 //                File file = new File(output.toString());
 //                if (file.exists()) {
+            swipeRefreshLayout.setRefreshing(true);
             new NetClient().serverMethods.recognize("f04d596f075a4f16bddefc896fc3fc6f",
                     null,
                     RequestBody.create(MediaType.parse("image/jpg"), event.getImageContext().getJpeg()))
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<List<RecognizeResponse>>() {
                                    @Override
                                    public void onCompleted() {
                                        Toast.makeText(WebQuestActivity.this, "onCompleted", Toast.LENGTH_SHORT).show();
+                                       swipeRefreshLayout.setRefreshing(false);
                                    }
 
                                    @Override
                                    public void onError(Throwable e) {
                                        e.printStackTrace();
                                        Toast.makeText(WebQuestActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+
+                                       swipeRefreshLayout.setRefreshing(false);
                                    }
 
                                    @Override
                                    public void onNext(List<RecognizeResponse> recognizeResponses) {
                                        for (RecognizeResponse response : recognizeResponses) {
-                                           Log.d("web", response.toString());
+                                           Log.d("web", response.getScores().toString());
                                        }
+
+                                       swipeRefreshLayout.setRefreshing(false);
 
                                        Toast.makeText(WebQuestActivity.this, recognizeResponses.toString(), Toast.LENGTH_SHORT).show();
                                    }
@@ -220,8 +226,9 @@ public class WebQuestActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
 
         if (cameraController != null) {
             try {

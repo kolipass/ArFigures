@@ -41,12 +41,12 @@
                 android:layout_gravity="bottom|clip_vertical"
                 android:visibility="invisible" />
 
-            <com.commonsware.cwac.cam2.CameraView
-                android:id="@+id/preview_surface3"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
-                android:layout_gravity="bottom|clip_vertical"
-                android:visibility="invisible" />
+            <!--<com.commonsware.cwac.cam2.CameraView-->
+            <!--android:id="@+id/preview_surface3"-->
+            <!--android:layout_width="86dp"-->
+            <!--android:layout_height="86dp"-->
+            <!--android:layout_gravity="bottom|clip_vertical"-->
+            <!--android:visibility="invisible" />-->
         </FrameLayout>
 
         <Button
