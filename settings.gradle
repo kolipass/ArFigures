@@ -1,2 +1,2 @@
 include ':app'
-include ':MetaioSdk:metaioSDK'
+include ':MetaioSdk:Examples_SDK:CustomRenderer'
