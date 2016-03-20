@@ -6,10 +6,37 @@ import java.util.Map;
  * Created by kolipass on 08.01.16.
  */
 public class RecognizeResponse {
+    public static final String FACE_RECTANGLE = "faceRectangle";
+    public static final String SCORES = "scores";
+
     private Map<FaceRectangle, Integer> faceRectangle;
     private Map<Scores, Double> scores;
 
-    enum FaceRectangle {
+    public Map<FaceRectangle, Integer> getFaceRectangle() {
+        return faceRectangle;
+    }
+
+    public void setFaceRectangle(Map<FaceRectangle, Integer> faceRectangle) {
+        this.faceRectangle = faceRectangle;
+    }
+
+    public Map<Scores, Double> getScores() {
+        return scores;
+    }
+
+    public void setScores(Map<Scores, Double> scores) {
+        this.scores = scores;
+    }
+
+    @Override
+    public String toString() {
+        return "RecognizeResponse{" +
+                "faceRectangle=" + faceRectangle +
+                ", scores=" + scores +
+                '}';
+    }
+
+    public enum FaceRectangle {
 
         left("left"),
         top("top"),
@@ -33,7 +60,7 @@ public class RecognizeResponse {
         }
     }
 
-    enum Scores {
+    public enum Scores {
         anger("anger"),
         contempt("contempt"),
         disgust("disgust"),

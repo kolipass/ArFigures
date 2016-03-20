@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
-import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -21,6 +20,9 @@ import com.commonsware.cwac.cam2.CameraSelectionCriteria;
 import com.commonsware.cwac.cam2.CameraView;
 import com.commonsware.cwac.cam2.FlashMode;
 import com.commonsware.cwac.cam2.PictureTransaction;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -41,11 +43,16 @@ import rx.schedulers.Schedulers;
 /**
  * Created by kolipass on 28.01.16.
  */
-public class WebQuestActivity extends Activity {
+public class WebQuestActivity extends Activity implements CustomSwipeRefreshLayout.CanChildScrollUpCallback {
     public WebView mWebView;
     public ProgressBar progressBar;
-    public SwipeRefreshLayout swipeRefreshLayout;
+    public CustomSwipeRefreshLayout swipeRefreshLayout;
     private CameraController cameraController;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     private static String createFileName(String name, String expression) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yy_MM_dd_HH_mm_ss");
@@ -91,6 +98,14 @@ public class WebQuestActivity extends Activity {
                 takePicture();
             }
         });
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return mWebView.getScrollY() > 0;
     }
 
     private void prepController() {
@@ -178,9 +193,10 @@ public class WebQuestActivity extends Activity {
     private void initWebVIew() {
         String url = "http://deutschquest.6931.ru/word_translate.html";
 
-        CookieManager cookieManager = CookieManager.getInstance();
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipeRefreshLayout = (CustomSwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setCanChildScrollUpCallback(this);
+
         mWebView = (WebView) findViewById(R.id.webView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -252,6 +268,22 @@ public class WebQuestActivity extends Activity {
         EventBus.getDefault().unregister(this);
 
         super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "WebQuest Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://mobi.tarantino.arfigure/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.disconnect();
     }
 
     /**
@@ -266,5 +298,25 @@ public class WebQuestActivity extends Activity {
         }
 
         super.onDestroy();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "WebQuest Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://mobi.tarantino.arfigure/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
     }
 }
